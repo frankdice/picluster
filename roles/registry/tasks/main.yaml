@@ -1,0 +1,31 @@
+- name: registry installed?
+  shell: "kubectl get pods -n registry | grep docker-registry"
+  register: registry_deployed
+  become: yes
+  become_user: "{{ default_user }}"
+  changed_when: False
+  ignore_errors: True
+
+- name: Copy registry configs
+  template:
+    src: "templates/{{ item }}"
+    dest: "{{ base_config_dir}}kubeconfigs/registry/{{ item }}"
+    owner: "{{ default_user }}"
+    group: "{{ default_group }}"
+    mode: 0644
+  with_items:
+    - registry-helm-values.yaml
+    - registry-ns-pv-pvc.yaml
+
+#Deploy registry if its not deployed
+- name: Install Docker Registry - NS/PV/PVC
+  shell: "kubectl apply -f {{ base_config_dir }}kubeconfigs/registry/registry-ns-pv-pvc.yaml"
+  become: yes
+  become_user: "{{ default_user }}"
+  when: "'1/1' not in registry_deployed.stdout"
+
+- name: Install Docker Registry - Helm
+  shell: "{{ base_bin_path}}helm install registry stable/docker-registry --namespace=registry -f {{ base_config_dir }}kubeconfigs/registry/registry-helm-values.yaml"
+  become: yes
+  become_user: "{{ default_user }}"
+  when: "'1/1' not in registry_deployed.stdout"

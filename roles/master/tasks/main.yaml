@@ -1,0 +1,104 @@
+- name: setup base directories
+  file:
+    path: "{{ base_config_dir}}{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - bin
+    - .kube
+    - kubeconfigs
+    - kubeconfigs/metallb
+    - kubeconfigs/registry
+
+
+    
+- name: Kubernetes Installed?
+  shell: "kubectl get nodes | grep {{ inventory_hostname_short }}"
+  register: kubernetes_running
+  become: yes
+  become_user: "{{ default_user }}"
+  changed_when: False
+  ignore_errors: True
+
+- debug:
+    var: kubernetes_running.stdout
+
+#This is where we'd do a kubeadm init if kubernetes wasn't running on the master. join on the secondarys.
+- name: kubeadm init with Vault token
+  shell: "kubeadm init --apiserver-advertise-address={{ ansible_eth0.ipv4.address }} --token={{ kubernetes_token }} --pod-network-cidr={{ pod_cidr }}"
+  register: kubeadm_init
+  when: kubernetes_running.stdout == ""
+
+- name: Copy admin.conf to config directory
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "{{ base_config_dir}}.kube/config"
+    owner: "{{ default_user }}"
+    group: "{{ default_group }}"
+    mode: 0755
+    remote_src: yes
+    backup: yes
+  when: kubeadm_init.changed
+
+
+
+- name: Download Helm3
+  get_url:
+    url: "https://get.helm.sh/{{ helm_version }}-linux-arm.tar.gz"
+    dest: "/tmp/{{ helm_version}}.tar.gz"
+
+- name: Untar helm3
+  unarchive:
+    src: "/tmp/{{ helm_version}}.tar.gz"
+    dest: /tmp/
+    mode: 0644
+    remote_src: yes
+
+- name: Copy helm
+  copy:
+    src: /tmp/linux-arm/helm
+    dest: "{{ base_bin_path}}helm"
+    owner: "{{ default_user }}"
+    group: "{{ default_group }}"
+    mode: 0755
+    remote_src: yes
+
+- name: Helm repo installed?
+  shell: "{{ base_bin_path}}helm repo list"
+  register: helm_repo
+  become: yes
+  become_user: "{{ default_user }}"
+  changed_when: False
+  ignore_errors: True
+
+- name: Install Helm Repo
+  shell: "{{ base_bin_path}}helm repo add stable https://kubernetes-charts.storage.googleapis.com/"
+  become: yes
+  become_user: "{{ default_user }}"
+  when: "'kubernetes-charts.storage.googleapis.com' not in helm_repo.stdout"
+
+- name: Helm Repo Update
+  shell: "{{ base_bin_path}}helm repo update"
+  become: yes
+  become_user: "{{ default_user }}"
+
+
+
+
+
+- name: Flannel Installed?
+  shell: "kubectl get ds -n kube-system | grep 'arm '"
+  register: flannel_running
+  become: yes
+  become_user: "{{ default_user }}"
+  changed_when: False
+  ignore_errors: True
+
+- debug:
+    var: flannel_running
+
+- name: Install Flannel (Networking)
+  shell: "curl -sSL https://rawgit.com/coreos/flannel/{{ flannel_version }}/Documentation/kube-flannel.yml | kubectl create -f -"
+  become: yes
+  become_user: "{{ default_user }}"
+  when: flannel_running.stdout == "" or " 0 " in flannel_running.stdout

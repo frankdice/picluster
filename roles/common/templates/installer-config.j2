@@ -1,0 +1,20 @@
+# To customize the raspberrypi-unattended-installer:
+#
+# Place your settings in this file as described in the README.md or in the advanced documentation.
+release=stretch
+packages="python"
+
+username="{{ default_user }}"
+userpw="{{ default_pass }}"
+userperms_admin=1
+user_ssh_pubkey="{{ default_ssh_key }}"
+
+hostname={{ ansible_hostname }}
+domainname=int.babyvelociraptor.com
+ip_addr={{ ansible_eth0.ipv4.address }}
+ip_netmask=255.255.255.0
+ip_gateway=192.168.1.1
+ip_nameservers="{{ default_dns }}"
+ip_ipv6=0
+
+timezone=America/Detroit

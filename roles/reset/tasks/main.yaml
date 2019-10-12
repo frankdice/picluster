@@ -1,0 +1,11 @@
+- name: Copy installer-config to /boot
+  copy:
+    src: /boot/raspberrypi-ua-netinst/reinstall/config.txt
+    dest: /boot/config.txt
+    owner: root
+    group: root
+    remote_src: yes
+
+- name: Reboot
+  shell: "shutdown -r now"
+  ignore_errors: True

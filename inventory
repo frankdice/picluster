@@ -1,0 +1,7 @@
+[nodes]
+pi0	ansible_host=192.168.1.10 ansible_become_pass='{{ default_pass }}'
+pi1	ansible_host=192.168.1.11 ansible_become_pass='{{ default_pass }}'
+pi2	ansible_host=192.168.1.12 ansible_become_pass='{{ default_pass }}'
+pi3	ansible_host=192.168.1.13 ansible_become_pass='{{ default_pass }}'
+[master]
+pi0

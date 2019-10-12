@@ -1,0 +1,80 @@
+- name: apt-get update
+  apt:
+    update_cache: yes
+    autoclean: yes
+    autoremove: yes
+
+- name: apt-get install common packages
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - apt-transport-https 
+    - nfs-common
+
+- name: "bash_profile for {{ default_user }}"
+  copy:
+    src: files/.bash_profile
+    dest: "{{ base_config_dir}}.bash_profile"
+    owner: "{{ default_user }}"
+    group: "{{ default_group }}"
+
+- name: Make sure installer-config.txt is up to date
+  template:
+    src: templates/installer-config.j2
+    dest: /boot/raspberrypi-ua-netinst/config/installer-config.txt
+    owner: root
+    group: root
+    mode: 0755
+
+# Docker Convenience Script Can Only Be Run Once
+- name: Determine if docker is installed
+  stat:
+    path: /usr/bin/docker
+  register: docker_there
+  ignore_errors: True
+
+- name: Run Docker {{ docker_ce_version }} Install Script
+  environment:
+    APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE: 1
+  script: "files/get-docker.sh {{ docker_ce_version }}"
+  when: docker_there.stat.exists == False
+  register: docker_installed
+
+- name: Lock docker version to {{ docker_ce_version}}
+  command: /usr/bin/apt-mark hold docker-ce
+  when: docker_installed.changed
+
+- name: Add apt key for kubernetes
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+
+- name: Add Kubernetes to Available apt Sources
+  template:
+    src: kubernetes.list
+    dest: /etc/apt/sources.list.d/kubernetes.list
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Install k8s {{ kubernetes_package_version }} Y'all
+  apt:
+    name: "{{ packages }}"
+    state: present
+    force: yes
+    update_cache: yes
+  register: kubernetes_install
+  vars:
+    packages:
+    - kubelet={{ kubernetes_package_version }}
+    - kubeadm={{ kubernetes_package_version }}
+    - kubectl={{ kubernetes_package_version }}
+
+- name: Lock k8s version to {{ kubernetes_package_version }}
+  command: "/usr/bin/apt-mark hold {{ item }}"
+  with_items:
+    - kubelet
+    - kubeadm
+    - kubectl
+  when: kubernetes_install.changed

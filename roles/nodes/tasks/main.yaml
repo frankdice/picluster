@@ -1,0 +1,11 @@
+- name: kubelet.conf exists?
+  stat:
+    path: /etc/kubernetes/kubelet.conf
+  register: kubelet_exists
+
+- debug:
+    var: kubelet_exists
+
+- name: Join Kubernetes Cluster
+  shell: "kubeadm join --ignore-preflight-errors=all --token {{ kubernetes_token }} {{ hostvars[groups['master'][0]]['ansible_eth0']['ipv4']['address'] }}:6443 --discovery-token-unsafe-skip-ca-verification"
+  when: kubelet_exists.stat.exists != True

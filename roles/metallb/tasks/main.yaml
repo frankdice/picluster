@@ -1,0 +1,48 @@
+#Metallb is the first thing to bring up - sleep for a minute if the nodes are still joining/propagating
+
+- name: Metallb installed?
+  shell: "kubectl get pods -n metallb-system | grep controller"
+  register: metallb_running
+  become: yes
+  become_user: "{{ default_user }}"
+  changed_when: False
+  ignore_errors: True
+
+- name: Sleep if metallb isn't up yet
+  pause:
+    minutes: 2
+  when: "'Pending' in metallb_running.stdout"
+
+- debug:
+    var: metallb_running
+
+- name: Metallb installed? (Recheck)
+  shell: "kubectl get pods -n metallb-system | grep controller"
+  register: metallb_running_recheck
+  become: yes
+  become_user: "{{ default_user }}"
+  changed_when: False
+  ignore_errors: True
+
+- name: Copy metallb config
+  template:
+    src: "templates/{{ item }}"
+    dest: "{{ base_config_dir}}kubeconfigs/metallb/{{ item }}"
+    owner: "{{ default_user }}"
+    group: "{{ default_group }}"
+    mode: 0644
+  with_items:
+    - metallb-configmap.yaml
+    - metallb-ns.yaml
+
+- name: Install MetalLB - NS
+  shell: "kubectl apply -f {{ base_config_dir }}kubeconfigs/metallb/metallb-ns.yaml"
+  become: yes
+  become_user: "{{ default_user }}"
+  when: "'1/1' not in metallb_running_recheck.stdout"
+
+- name: Install MetalLB
+  shell: "{{ base_bin_path}}helm install metallb stable/metallb --namespace=metallb-system -f {{ base_config_dir }}kubeconfigs/metallb/metallb-configmap.yaml"
+  become: yes
+  become_user: "{{ default_user }}"
+  when: "'1/1' not in metallb_running_recheck.stdout"

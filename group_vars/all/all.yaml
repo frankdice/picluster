@@ -1,0 +1,23 @@
+pod_cidr: 10.244.0.0/16
+metallb_addresses: "{{ vault_metallb_addresses }}"
+
+docker_ce_version: "18.09.0~3-0~raspbian-stretch"
+kubernetes_package_version: "1.16.0-00"
+
+flannel_version: "master"
+
+helm_version: "helm-v3.0.0-beta.4"
+
+nfs_server: "{{ vault_nfs_server }}"
+
+default_dns: "{{ vault_dns }}"
+
+default_ssh_key: "{{ vault_ssh_key }}"
+default_user: "{{ vault_system_user }}"
+default_group: "{{ vault_system_group }}"
+default_pass: "{{ vault_system_pass }}"
+
+base_config_dir: "/home/{{ default_user }}/"
+base_bin_path: "{{ base_config_dir }}bin/"
+
+kubernetes_token: "{{ vault_kubernetes_token }}"
