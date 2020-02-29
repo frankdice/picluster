@@ -10,6 +10,7 @@ bases:
 
 patchesStrategicMerge:
   - patches/argocd-cm.yaml
+  - patches/argocd-server-svc.yaml
 
 resources:
   # Application CRD for Argo CD - enables self-management
