@@ -13,4 +13,4 @@
 - hosts: master
   roles:
     - metallb
-    - registry
+#    - registry

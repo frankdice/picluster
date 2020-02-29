@@ -1,0 +1,14 @@
+# https://argoproj.github.io/argo-cd/operator-manual/argocd-cm.yaml
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+data:
+  url: https://argo.int.babyvelociraptor.com
+  
+  repository.credentials: |
+    - url: git@github.com
+      sshPrivateKeySecret:
+        name: github-secret
+        key: sshPrivateKey

@@ -1,0 +1,24 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Namespace in which to install Argo CD
+namespace: argocd
+
+bases:
+  - github.com/argoproj/argo-cd/manifests/cluster-install?ref=v1.4.2
+
+
+patchesStrategicMerge:
+  - patches/argocd-cm.yaml
+
+resources:
+  # Application CRD for Argo CD - enables self-management
+  - argocd-application.yaml
+
+  #Other resources
+  - resources/namespace.yaml
+
+images:
+- name: argoproj/argocd
+  newName: phillebaba/argocd
+  newTag: v1.4.2
