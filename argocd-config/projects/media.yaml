@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: media
+  namespace: argocd
+spec:
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: 'Namespace'
+      - group: '*'
+      kind: 'PersistentVolume'
+  destinations:
+    - namespace: 'media'
+      server: 'https://kubernetes.default.svc'
+  sourceRepos:
+    - '*'
+  orphanedResources:
+    warn: true

@@ -1,0 +1,27 @@
+- name: k8s ArgoCD Namespace
+  shell: "kubectl get ns | grep argocd"
+  register: argo_ns_deployed
+  become: yes
+  become_user: "{{ default_user }}"
+  changed_when: False
+  ignore_errors: True
+
+- name: Create ArgoCD NS
+  shell: "kubectl create ns argocd"
+  become: yes
+  become_user: "{{ default_user }}"
+  when: "'argocd' not in argo_ns_deployed.stdout"
+
+- name: k8s ArgoCD Secrets
+  shell: "kubectl -n argocd get secrets repo-github"
+  register: argo_secrets_deployed
+  become: yes
+  become_user: "{{ default_user }}"
+  changed_when: False
+  ignore_errors: True
+
+- name: Create ArgoCD Github Secret
+  shell: "echo \"{{ lookup('template', './github-secret.yaml.j2') }}\" | kubectl -n argocd apply -f -"
+  become: yes
+  become_user: "{{ default_user }}"
+  when: "'NotFound' in argo_secrets_deployed.stderr"

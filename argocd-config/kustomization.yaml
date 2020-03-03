@@ -16,8 +16,12 @@ resources:
   # Application CRD for Argo CD - enables self-management
   - argocd-application.yaml
 
-  #Other resources
+  #Create Namespaces
   - resources/namespace.yaml
+
+  # Projects (AppProject CRD's)
+  - projects/cluster-services.yaml
+  - projects/media.yaml
 
 images:
 - name: argoproj/argocd
