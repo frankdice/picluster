@@ -7,7 +7,7 @@ spec:
   clusterResourceWhitelist:
     - group: '*'
       kind: 'Namespace'
-      - group: '*'
+    - group: '*'
       kind: 'PersistentVolume'
   destinations:
     - namespace: 'media'
