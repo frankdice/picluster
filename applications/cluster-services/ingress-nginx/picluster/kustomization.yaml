@@ -48,6 +48,16 @@ patchesJson6902:
       - op: add
         path: /spec/loadBalancerIP
         value: 192.168.1.240
+  - target:
+      version: v1beta1
+      group: rbac.authorization.k8s.io
+      kind: Role
+      name: nginx-ingress-role
+      namespace: ingress-nginx
+    patch: |-
+      - op: replace
+        path: /rules/1/resourceNames/0
+        value: ingress-controller-leader-ingress-nginx
 
 resources:
   - ../base
