@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  labels:
+    app: external-dns
+  name: external-dns
+  namespace: argocd
+spec:
+  project: cluster-services
+  source:
+    repoURL: git@github.com:frankdice/picluster.git
+    targetRevision: master
+    path: applications/cluster-services/external-dns/picluster
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: external-dns
+  syncPolicy:
+    automated:
+      prune: true

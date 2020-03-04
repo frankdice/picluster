@@ -1,0 +1,43 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+patchesJson6902:
+  - target:
+      version: v1
+      group: apps
+      kind: Deployment
+      name: external-dns
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --domain-filter=int.babyvelociraptor.com
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --txt-owner-id=pi-cluster
+patchesStrategicMerge:
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: external-dns
+    spec:
+      template:
+        spec:
+          containers:
+            - name: external-dns
+              env:
+                - name: GOOGLE_APPLICATION_CREDENTIALS
+                  value: /var/secrets/google/external-dns-gcp-sa.json
+              volumeMounts:
+                - name: google-cloud-key
+                  mountPath: /var/secrets/google
+          volumes:
+            - name: google-cloud-key
+              secret:
+                secretName: external-dns-gcp-sa
+
+resources:
+  - ../base

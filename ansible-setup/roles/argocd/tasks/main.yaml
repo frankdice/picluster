@@ -13,7 +13,7 @@
   when: "'argocd' not in argo_ns_deployed.stdout"
 
 - name: k8s ArgoCD Secrets
-  shell: "kubectl -n argocd get secrets repo-github"
+  shell: "kubectl -n argocd get secrets github-secret"
   register: argo_secrets_deployed
   become: yes
   become_user: "{{ default_user }}"
@@ -25,3 +25,31 @@
   become: yes
   become_user: "{{ default_user }}"
   when: "'NotFound' in argo_secrets_deployed.stderr"
+
+- name: k8s external-dns Namespace
+  shell: "kubectl get ns | grep external-dns"
+  register: external_dns_ns_deployed
+  become: yes
+  become_user: "{{ default_user }}"
+  changed_when: False
+  ignore_errors: True
+
+- name: Create external-dns NS
+  shell: "kubectl create ns external-dns"
+  become: yes
+  become_user: "{{ default_user }}"
+  when: "'external-dns' not in external_dns_ns_deployed.stdout"
+
+- name: k8s external-dns Secret GCP SA
+  shell: "kubectl -n external-dns get secrets external-dns-gcp-sa"
+  register: external_dns_secrets_deployed
+  become: yes
+  become_user: "{{ default_user }}"
+  changed_when: False
+  ignore_errors: True
+
+- name: Create ArgoCD external-dns GCP SA Secret
+  shell: "echo \"{{ lookup('template', './external-dns-secret.yaml.j2') }}\" | kubectl -n external-dns apply -f -"
+  become: yes
+  become_user: "{{ default_user }}"
+  when: "'NotFound' in external_dns_secrets_deployed.stderr"
