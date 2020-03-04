@@ -13,7 +13,7 @@ patchesJson6902:
     patch: |-
       - op: add
         path: /spec/template/spec/containers/0/args/-
-        value: --domain-filter=int.babyvelociraptor.com
+        value: --domain-filter=babyvelociraptor.com
       - op: add
         path: /spec/template/spec/containers/0/args/-
         value: --txt-owner-id=pi-cluster
