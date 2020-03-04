@@ -4,6 +4,17 @@ kind: Kustomization
 # Namespace in which to install Argo CD
 namespace: argocd
 
+patchesJson6902:
+  - target:
+      version: v1
+      group: apps
+      kind: Deployment
+      name: argocd-server
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/command/-
+        value: --insecure
+
 bases:
   - github.com/argoproj/argo-cd/manifests/cluster-install?ref=v1.4.2
 
