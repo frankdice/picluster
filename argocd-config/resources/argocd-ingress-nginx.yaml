@@ -12,7 +12,7 @@ spec:
           - path: /
             backend:
               serviceName: argocd-server
-              servicePort: 80
+              servicePort: 443
   tls:
     - hosts:
       - argocd.int.babyvelociraptor.com
