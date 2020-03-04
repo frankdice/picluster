@@ -16,5 +16,5 @@ spec:
     tls:
       hosts:
         - argocd.int.babyvelociraptor.com
-        secretName: tls-secret
+      secretName: tls-secret
     
