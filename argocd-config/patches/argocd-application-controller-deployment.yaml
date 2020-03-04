@@ -1,0 +1,15 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-application-controller
+spec:
+  template:
+    spec:
+      containers:
+        - name: argocd-application-controller
+          command:
+            - argocd-application-controller
+            - --status-processors
+            - '4'
+            - --operation-processors
+            - '2'
