@@ -59,4 +59,4 @@ spec:
         - --source=ingress
         - --provider=google
         - --registry=txt
-        - --log-level=debug
+        ##- --log-level=debug
