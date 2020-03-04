@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  labels:
+    app: ingress-nginx
+  name: ingress-nginx
+  namespace: argocd
+spec:
+  project: cluster-services
+  source:
+    repoURL: git@github.com:frankdice/picluster.git
+    targetRevision: master
+    path: applications/cluster-services/ingress-nginx/picluster
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ingress-nginx
+  syncPolicy:
+    automated:
+      prune: true
