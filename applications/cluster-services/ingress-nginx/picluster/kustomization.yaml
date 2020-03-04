@@ -30,12 +30,24 @@ patchesJson6902:
       - op: add
         path: /spec/template/spec/containers/0/args/-
         value: --https-port=8443
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --ingress-class=ingress-nginx
       - op: replace
         path: /spec/template/spec/containers/0/ports/0/containerPort
         value: 8080
       - op: replace
         path: /spec/template/spec/containers/0/ports/1/containerPort
         value: 8443
+  - target:
+      version: v1
+      kind: Service
+      name: ingress-nginx
+      namespace: ingress-nginx
+    patch: |-
+      - op: add
+        path: /spec/loadBalancerIP
+        value: 192.168.1.240
 
 resources:
   - ../base
