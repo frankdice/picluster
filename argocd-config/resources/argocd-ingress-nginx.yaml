@@ -6,15 +6,15 @@ metadata:
   name: argocd-server
 spec:
   rules:
-  - host: argocd.int.babyvelociraptor.com
-    http:
-      paths:
-        - path: /
-          backend:
-            serviceName: argocd-server
-            servicePort: 80
-    tls:
-      hosts:
-        - argocd.int.babyvelociraptor.com
+    - host: argocd.int.babyvelociraptor.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: argocd-server
+              servicePort: 80
+  tls:
+    - hosts:
+      - argocd.int.babyvelociraptor.com
       secretName: tls-secret
     
