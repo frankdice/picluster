@@ -13,3 +13,8 @@ spec:
           backend:
             serviceName: argocd-server
             servicePort: 80
+    tls:
+      hosts:
+        - argocd.int.babyvelociraptor.com
+        secretName: tls-secret
+    
