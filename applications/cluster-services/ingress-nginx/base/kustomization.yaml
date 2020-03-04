@@ -18,6 +18,7 @@ replicas:
   - name: nginx-ingress-controller
     count: 2
 
+#Pulled the installers from nginx-0.30.0 tag on ingress-nginx project
 resources:
-  - https://github.com/kubernetes/ingress-nginx/blob/nginx-0.30.0/deploy/static/mandatory.yaml
-  - https://github.com/kubernetes/ingress-nginx/blob/nginx-0.30.0/deploy/static/provider/cloud-generic.yaml
+  - ./mandatory.yaml
+  - ./cloud-generic.yaml
