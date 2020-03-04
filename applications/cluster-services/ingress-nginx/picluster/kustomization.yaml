@@ -16,5 +16,26 @@ images:
   - name: quay.io/kubernetes-ingress-controller/nginx-ingress-controller
     newName: quay.io/kubernetes-ingress-controller/nginx-ingress-controller-arm
 
+patchesJson6902:
+  - target:
+      version: v1
+      group: apps
+      kind: Deployment
+      name: nginx-ingress-controller
+      namespace: ingress-nginx
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --http-port=8080
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --https-port=8443
+      - op: replace
+        path: /spec/template/spec/containers/0/ports/0/containerPort
+        value: 8080
+      - op: replace
+        path: /spec/template/spec/containers/0/ports/1/containerPort
+        value: 8443
+
 resources:
   - ../base

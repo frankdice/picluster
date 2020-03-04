@@ -5,13 +5,6 @@ commonLabels:
   app.kubernetes.io/name: ingress-nginx
   app.kubernetes.io/part-of: ingress-nginx
 
-# configMapGenerator:
-#   - name: nginx-configuration
-#     behavior: merge
-#     literals:
-#       - proxy-read-timeout=300s
-#       - proxy-send-timeout=300s
-
 namespace: ingress-nginx
 
 replicas:
