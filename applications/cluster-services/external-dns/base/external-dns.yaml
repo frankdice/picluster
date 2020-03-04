@@ -39,6 +39,7 @@ kind: Deployment
 metadata:
   name: external-dns
 spec:
+  revisionHistoryLimit: 2
   strategy:
     type: Recreate
   selector:
