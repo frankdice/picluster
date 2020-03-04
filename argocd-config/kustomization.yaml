@@ -21,6 +21,7 @@ bases:
 
 patchesStrategicMerge:
   - patches/argocd-cm.yaml
+  - patches/argocd-application-controller-deployment.yaml
 #  - patches/argocd-server-svc.yaml
 
 resources:
