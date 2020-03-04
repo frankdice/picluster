@@ -53,7 +53,7 @@ spec:
       containers:
       - name: external-dns
         ## image: registry.opensource.zalan.do/teapot/external-dns:latest
-        image: docker.io/radhus/external-dns
+        image: docker.io/vchrisb/external-dns
         args:
         - --source=service
         - --source=ingress
