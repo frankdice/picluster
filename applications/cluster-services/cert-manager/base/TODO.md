@@ -1,0 +1,1 @@
+I manually changed the leader election NS from kube-system to cert-manager in the yaml. Go back and make this be kustomize compatible. 
