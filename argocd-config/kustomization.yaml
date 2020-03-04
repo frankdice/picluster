@@ -15,7 +15,7 @@ patchesStrategicMerge:
 resources:
   # Application CRD for Argo CD - enables self-management
   - argocd-application.yaml
-  - argocd-ingress-nginx.yaml
+  - resources/argocd-ingress-nginx.yaml
 
   #Create Namespaces
   - resources/namespace.yaml
