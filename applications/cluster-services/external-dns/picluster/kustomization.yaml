@@ -17,6 +17,9 @@ patchesJson6902:
       - op: add
         path: /spec/template/spec/containers/0/args/-
         value: --txt-owner-id=pi-cluster
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --google-project=dice-dns
 patchesStrategicMerge:
   - |-
     apiVersion: apps/v1
