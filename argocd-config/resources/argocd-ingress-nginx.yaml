@@ -4,6 +4,7 @@ metadata:
   name: argocd-server-http-ingress
   annotations:
     kubernetes.io/ingress.class: "ingress-nginx"
+    cert-manager.io/cluster-issuer: letsencrypt
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
 spec:
@@ -17,4 +18,4 @@ spec:
   tls:
   - hosts:
     - argocd.int.babyvelociraptor.com
-    secretName: argocd-secret
+    secretName: argocd-server
