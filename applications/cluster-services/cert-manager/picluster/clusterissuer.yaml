@@ -1,0 +1,23 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: ClusterIssuer
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: '1'
+  name: letsencrypt
+spec:
+  acme:
+    email: frank.dice@gmail.com
+    privateKeySecretRef:
+      name: letsencrypt
+    server: https://acme-v02.api.letsencrypt.org/directory
+    solvers:
+      - dns01:
+          cnameStrategy: Follow
+          clouddns:
+            project: dice-dns
+            serviceAccountSecretRef:
+              name: external-dns-gcp-sa
+              key: external-dns-gcp-sa.json
+        selector:
+          dnsZones:
+            - babyvelociraptor.com

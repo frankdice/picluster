@@ -53,3 +53,31 @@
   become: yes
   become_user: "{{ default_user }}"
   when: "'NotFound' in external_dns_secrets_deployed.stderr"
+
+- name: k8s cert-manager Namespace
+  shell: "kubectl get ns | grep cert-manager"
+  register: cert_manager_ns_deployed
+  become: yes
+  become_user: "{{ default_user }}"
+  changed_when: False
+  ignore_errors: True
+
+- name: Create cert-manager NS
+  shell: "kubectl create ns cert-manager"
+  become: yes
+  become_user: "{{ default_user }}"
+  when: "'cert-manager' not in cert_manager_ns_deployed.stdout"
+
+- name: k8s cert-manager Secret GCP SA
+  shell: "kubectl -n cert-manager get secrets external-dns-gcp-sa"
+  register: cert_manager_secrets_deployed
+  become: yes
+  become_user: "{{ default_user }}"
+  changed_when: False
+  ignore_errors: True
+
+- name: Create ArgoCD cert-manager GCP SA Secret
+  shell: "echo \"{{ lookup('template', './external-dns-secret.yaml.j2') }}\" | kubectl -n cert-manager apply -f -"
+  become: yes
+  become_user: "{{ default_user }}"
+  when: "'NotFound' in cert_manager_secrets_deployed.stderr"
